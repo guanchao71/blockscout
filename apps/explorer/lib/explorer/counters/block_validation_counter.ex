@@ -2,7 +2,7 @@ defmodule Explorer.Counters.BlockValidationCounter do
   use GenServer
 
   @moduledoc """
-  Module responsible for fetching and consolidating the number of 
+  Module responsible for fetching and consolidating the number of
   validations from an address.
   """
 
@@ -51,15 +51,13 @@ defmodule Explorer.Counters.BlockValidationCounter do
   Consolidates the number of block validations grouped by `address_hash`.
   """
   def consolidate_blocks do
-    total_block_validations = Chain.group_block_validations_by_address()
-
-    for {address_hash, total} <- total_block_validations do
+    Chain.each_address_block_validation_count(fn {address_hash, total} ->
       insert_or_update_counter(address_hash, total)
-    end
+    end)
   end
 
   @doc """
-  Fetches the number of validations related to an `address_hash`. 
+  Fetches the number of validations related to an `address_hash`.
   """
   @spec fetch(Hash.Address.t()) :: non_neg_integer
   def fetch(addr_hash) do
