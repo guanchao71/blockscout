@@ -3,7 +3,6 @@ import _ from 'lodash'
 import humps from 'humps'
 import socket from '../socket'
 import { createStore, connectElements } from '../lib/redux_helpers.js'
-import { withInfiniteScroll, connectInfiniteScroll } from '../lib/infinite_scroll_helpers'
 import listMorph from '../lib/list_morph'
 
 export const initialState = {
@@ -12,9 +11,7 @@ export const initialState = {
   blocks: []
 }
 
-export const reducer = withMissingBlocks(withInfiniteScroll(baseReducer))
-
-function baseReducer (state = initialState, action) {
+export function reducer (state = initialState, action) {
   switch (action.type) {
     case 'ELEMENTS_LOAD': {
       return Object.assign({}, state, _.omit(action, 'type'))
@@ -39,14 +36,6 @@ function baseReducer (state = initialState, action) {
           blocks: state.blocks.map((block) => block.blockNumber === action.msg.blockNumber ? action.msg : block)
         })
       }
-    }
-    case 'RECEIVED_NEXT_PAGE': {
-      return Object.assign({}, state, {
-        blocks: [
-          ...state.blocks,
-          ...action.msg.blocks
-        ]
-      })
     }
     default:
       return state
@@ -100,7 +89,6 @@ const $blockListPage = $('[data-page="block-list"]')
 if ($blockListPage.length) {
   const store = createStore(reducer)
   connectElements({ store, elements })
-  connectInfiniteScroll(store)
 
   const blocksChannel = socket.channel(`blocks:new_block`, {})
   blocksChannel.join()
