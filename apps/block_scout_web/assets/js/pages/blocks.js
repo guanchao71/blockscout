@@ -42,25 +42,6 @@ export function reducer (state = initialState, action) {
   }
 }
 
-function withMissingBlocks (reducer) {
-  return (...args) => {
-    const result = reducer(...args)
-
-    if (result.blocks.length < 2) return result
-
-    const maxBlock = _.first(result.blocks).blockNumber
-    const minBlock = _.last(result.blocks).blockNumber
-
-    return Object.assign({}, result, {
-      blocks: _.rangeRight(minBlock, maxBlock + 1)
-        .map((blockNumber) => _.find(result.blocks, ['blockNumber', blockNumber]) || {
-          blockNumber,
-          blockHtml: placeHolderBlock(blockNumber)
-        })
-    })
-  }
-}
-
 const elements = {
   '[data-selector="channel-disconnected-message"]': {
     render ($el, state) {
