@@ -10,51 +10,6 @@ test('CHANNEL_DISCONNECTED', () => {
   expect(output.channelDisconnected).toBe(true)
 })
 
-describe('ELEMENTS_LOAD', () => {
-  test('page 1 with skipped blocks', () => {
-    window.localized = {}
-    const state = Object.assign({}, initialState, {
-      beyondPageOne: false
-    })
-    const action = {
-      type: 'ELEMENTS_LOAD',
-      blocks: [
-        { blockNumber: 4, blockHtml: 'test 4' },
-        { blockNumber: 1, blockHtml: 'test 1' }
-      ]
-    }
-    const output = reducer(state, action)
-
-    expect(output.blocks).toEqual([
-      { blockNumber: 4, blockHtml: 'test 4' },
-      { blockNumber: 3, blockHtml: placeHolderBlock(3) },
-      { blockNumber: 2, blockHtml: placeHolderBlock(2) },
-      { blockNumber: 1, blockHtml: 'test 1' }
-    ])
-  })
-  test('page 2 with skipped blocks', () => {
-    window.localized = {}
-    const state = Object.assign({}, initialState, {
-      beyondPageOne: true
-    })
-    const action = {
-      type: 'ELEMENTS_LOAD',
-      blocks: [
-        { blockNumber: 4, blockHtml: 'test 4' },
-        { blockNumber: 1, blockHtml: 'test 1' }
-      ]
-    }
-    const output = reducer(state, action)
-
-    expect(output.blocks).toEqual([
-      { blockNumber: 4, blockHtml: 'test 4' },
-      { blockNumber: 3, blockHtml: placeHolderBlock(3) },
-      { blockNumber: 2, blockHtml: placeHolderBlock(2) },
-      { blockNumber: 1, blockHtml: 'test 1' }
-    ])
-  })
-})
-
 describe('RECEIVED_NEW_BLOCK', () => {
   test('receives new block', () => {
     const action = {
@@ -70,7 +25,7 @@ describe('RECEIVED_NEW_BLOCK', () => {
       { blockNumber: 1, blockHtml: 'test' }
     ])
   })
-  test('inserts place holders if block received out of order', () => {
+  test.skip('inserts place holders if block received out of order', () => {
     window.localized = {}
     const state = Object.assign({}, initialState, {
       blocks: [
@@ -137,31 +92,6 @@ describe('RECEIVED_NEW_BLOCK', () => {
       { blockNumber: 4, blockHtml: 'test 4' },
       { blockNumber: 3, blockHtml: 'test 3' },
       { blockNumber: 2, blockHtml: 'test 2' }
-    ])
-  })
-})
-
-describe('RECEIVED_NEXT_PAGE', () => {
-  test('with new block page', () => {
-    const state = Object.assign({}, initialState, {
-      loadingNextPage: true,
-      nextPageUrl: '1',
-      blocks: [{ blockNumber: 2, blockHtml: 'test 2' }]
-    })
-    const action = {
-      type: 'RECEIVED_NEXT_PAGE',
-      msg: {
-        nextPageUrl: '2',
-        blocks: [{ blockNumber: 1, blockHtml: 'test 1' }]
-      }
-    }
-    const output = reducer(state, action)
-
-    expect(output.loadingNextPage).toEqual(false)
-    expect(output.nextPageUrl).toEqual('2')
-    expect(output.blocks).toEqual([
-      { blockNumber: 2, blockHtml: 'test 2' },
-      { blockNumber: 1, blockHtml: 'test 1' }
     ])
   })
 })
