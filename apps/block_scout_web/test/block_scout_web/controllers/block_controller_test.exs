@@ -64,10 +64,9 @@ defmodule BlockScoutWeb.BlockControllerTest do
     end
 
     test "returns next page of results based on last seen block", %{conn: conn} do
-      second_page_block_ids =
-        50
-        |> insert_list(:block)
-        |> Enum.map(& &1.number)
+      50
+      |> insert_list(:block)
+      |> Enum.map(& &1.number)
 
       block = insert(:block)
 
@@ -123,10 +122,9 @@ defmodule BlockScoutWeb.BlockControllerTest do
 
   describe "GET reorgs/2" do
     test "returns all reorgs", %{conn: conn} do
-      reorg_hashes =
-        4
-        |> insert_list(:block, consensus: false)
-        |> Enum.map(& &1.hash)
+      4
+      |> insert_list(:block, consensus: false)
+      |> Enum.map(& &1.hash)
 
       conn = get(conn, reorg_path(conn, :reorg), %{"type" => "JSON"})
 
