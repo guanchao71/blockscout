@@ -333,7 +333,7 @@ defmodule Explorer.Chain.Import do
   defp import_transactions(multis, options) when is_list(multis) and is_map(options) do
     import_id = :erlang.unique_integer([:positive])
 
-    Explorer.metadata([import_id: import_id], fn ->
+    Explorer.Logger.metadata([import_id: import_id], fn ->
       Enum.reduce_while(multis, {:ok, %{}}, fn multi, {:ok, acc_changes} ->
         case import_transaction(multi, options) do
           {:ok, changes} -> {:cont, {:ok, Map.merge(acc_changes, changes)}}
