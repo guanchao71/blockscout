@@ -2,13 +2,11 @@ import $ from 'jquery'
 import _ from 'lodash'
 import humps from 'humps'
 import socket from '../socket'
-import { createStore, connectElements } from '../lib/redux_helpers.js'
-import listMorph from '../lib/list_morph'
+import { connectElements } from '../lib/redux_helpers.js'
+import { createAsyncLoadStore } from '../lib/async_listing_load'
 
 export const initialState = {
-  channelDisconnected: false,
-
-  blocks: []
+  channelDisconnected: false
 }
 
 export function reducer (state = initialState, action) {
@@ -24,18 +22,9 @@ export function reducer (state = initialState, action) {
     case 'RECEIVED_NEW_BLOCK': {
       if (state.channelDisconnected) return state
 
-      if (!state.blocks.length || state.blocks[0].blockNumber < action.msg.blockNumber) {
-        return Object.assign({}, state, {
-          blocks: [
-            action.msg,
-            ...state.blocks
-          ]
-        })
-      } else {
-        return Object.assign({}, state, {
-          blocks: state.blocks.map((block) => block.blockNumber === action.msg.blockNumber ? action.msg : block)
-        })
-      }
+      return Object.assign({}, state, {
+        items: [action.msg.blockHtml, ...state.items]
+      })
     }
     default:
       return state
@@ -47,28 +36,12 @@ const elements = {
     render ($el, state) {
       if (state.channelDisconnected) $el.show()
     }
-  },
-  '[data-selector="blocks-list"]': {
-    load ($el) {
-      return {
-        blocks: $el.children().map((index, el) => ({
-          blockNumber: parseInt(el.dataset.blockNumber),
-          blockHtml: el.outerHTML
-        })).toArray()
-      }
-    },
-    render ($el, state, oldState) {
-      if (oldState.blocks === state.blocks) return
-      const container = $el[0]
-      const newElements = _.map(state.blocks, ({ blockHtml }) => $(blockHtml)[0])
-      listMorph(container, newElements, { key: 'dataset.blockNumber' })
-    }
   }
 }
 
 const $blockListPage = $('[data-page="block-list"]')
 if ($blockListPage.length) {
-  const store = createStore(reducer)
+  const store = createAsyncLoadStore(reducer, initialState, 'dataset.blockNumber')
   connectElements({ store, elements })
 
   const blocksChannel = socket.channel(`blocks:new_block`, {})
