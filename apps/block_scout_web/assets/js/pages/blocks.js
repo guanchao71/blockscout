@@ -59,12 +59,10 @@ function withMissingBlocks (reducer) {
     const maxBlock = getBlockNumber(_.first(result.items))
     const minBlock = getBlockNumber(_.last(result.items))
 
-    const resultt = Object.assign({}, result, { // dontcommit
+    return Object.assign({}, result, {
       items: _.rangeRight(minBlock, maxBlock + 1)
         .map((blockNumber) => _.find(result.items, item => getBlockNumber(item) === blockNumber) || placeHolderBlock(blockNumber))
     })
-
-    return resultt
   }
 }
 
