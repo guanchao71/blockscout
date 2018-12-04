@@ -81,7 +81,7 @@ defmodule BlockScoutWeb.BlockControllerTest do
       assert length(items) == 50
     end
 
-    test "next_page_params exist if not on last page", %{conn: conn} do
+    test "next_page_path exist if not on last page", %{conn: conn} do
       %Block{number: number} =
         60
         |> insert_list(:block)
@@ -91,8 +91,7 @@ defmodule BlockScoutWeb.BlockControllerTest do
 
       expected_path =
         block_path(conn, :index, %{
-          block_number: number,
-          type: "JSON"
+          block_number: number
         })
 
       assert Map.get(json_response(conn, 200), "next_page_path") == expected_path

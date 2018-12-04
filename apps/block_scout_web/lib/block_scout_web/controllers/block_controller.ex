@@ -61,7 +61,7 @@ defmodule BlockScoutWeb.BlockController do
           block_path(
             conn,
             :index,
-            next_page_params
+            Map.delete(next_page_params, "type")
           )
       end
 
