@@ -27,7 +27,7 @@ function baseReducer (state = initialState, action) {
       const blockNumber = getBlockNumber(action.msg.blockHtml)
       const minBlock = getBlockNumber(_.last(state.items))
 
-      if (blockNumber < minBlock) return state
+      if (state.items.length && blockNumber < minBlock) return state
 
       return Object.assign({}, state, {
         items: [action.msg.blockHtml, ...state.items]
