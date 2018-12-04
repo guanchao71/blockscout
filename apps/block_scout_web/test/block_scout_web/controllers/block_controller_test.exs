@@ -102,7 +102,7 @@ defmodule BlockScoutWeb.BlockControllerTest do
 
       conn = get(conn, block_path(conn, :index), %{"type" => "JSON"})
 
-      assert Map.get(json_response(conn, 200), "next_page_path") == nil
+      refute conn |> json_response(200) |> Map.get("next_page_path")
     end
 
     test "displays miner primary address name", %{conn: conn} do
