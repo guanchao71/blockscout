@@ -154,7 +154,6 @@ defmodule BlockScoutWeb.BlockControllerTest do
       for _index <- 1..4 do
         uncle = insert(:block, consensus: false)
         insert(:block_second_degree_relation, uncle_hash: uncle.hash)
-        uncle.hash
       end
 
       conn = get(conn, uncle_path(conn, :uncle), %{"type" => "JSON"})
@@ -168,7 +167,6 @@ defmodule BlockScoutWeb.BlockControllerTest do
       for _index <- 1..4 do
         uncle = insert(:block, consensus: false)
         insert(:block_second_degree_relation, uncle_hash: uncle.hash)
-        uncle.hash
       end
 
       insert(:block)
