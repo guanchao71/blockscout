@@ -9,7 +9,9 @@ export const initialState = {
   channelDisconnected: false
 }
 
-export function reducer (state = initialState, action) {
+export const reducer = withMissingBlocks(baseReducer)
+
+function baseReducer (state = initialState, action) {
   switch (action.type) {
     case 'ELEMENTS_LOAD': {
       return Object.assign({}, state, _.omit(action, 'type'))
@@ -21,6 +23,11 @@ export function reducer (state = initialState, action) {
     }
     case 'RECEIVED_NEW_BLOCK': {
       if (state.channelDisconnected) return state
+
+      const blockNumber = getBlockNumber(action.msg.blockHtml)
+      const minBlock = getBlockNumber(_.last(state.items))
+
+      if (blockNumber < minBlock) return state
 
       return Object.assign({}, state, {
         items: [action.msg.blockHtml, ...state.items]
@@ -36,6 +43,28 @@ const elements = {
     render ($el, state) {
       if (state.channelDisconnected) $el.show()
     }
+  }
+}
+
+function getBlockNumber (blockHtml) {
+  return $(blockHtml).data('blockNumber')
+}
+
+function withMissingBlocks (reducer) {
+  return (...args) => {
+    const result = reducer(...args)
+
+    if (result.items.length < 2) return result
+
+    const maxBlock = getBlockNumber(_.first(result.items))
+    const minBlock = getBlockNumber(_.last(result.items))
+
+    const resultt = Object.assign({}, result, { // dontcommit
+      items: _.rangeRight(minBlock, maxBlock + 1)
+        .map((blockNumber) => _.find(result.items, item => getBlockNumber(item) === blockNumber) || placeHolderBlock(blockNumber))
+    })
+
+    return resultt
   }
 }
 

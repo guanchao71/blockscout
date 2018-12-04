@@ -1,7 +1,7 @@
 import { reducer, initialState, placeHolderBlock } from '../../js/pages/blocks'
 
 test('CHANNEL_DISCONNECTED', () => {
-  const state = initialState
+  const state = Object.assign({}, initialState, { items: [] })
   const action = {
     type: 'CHANNEL_DISCONNECTED'
   }
@@ -12,86 +12,81 @@ test('CHANNEL_DISCONNECTED', () => {
 
 describe('RECEIVED_NEW_BLOCK', () => {
   test('receives new block', () => {
+    const state = Object.assign({}, initialState, { items: [] })
     const action = {
       type: 'RECEIVED_NEW_BLOCK',
       msg: {
-        blockHtml: 'test',
-        blockNumber: 1
+        blockHtml: '<div data-block-number="1"></div>'
       }
     }
-    const output = reducer(initialState, action)
+    const output = reducer(state, action)
 
-    expect(output.blocks).toEqual([
-      { blockNumber: 1, blockHtml: 'test' }
-    ])
+    expect(output.items).toEqual(['<div data-block-number="1"></div>'])
   })
-  test.skip('inserts place holders if block received out of order', () => {
+  test('inserts place holders if block received out of order', () => {
     window.localized = {}
     const state = Object.assign({}, initialState, {
-      blocks: [
-        { blockNumber: 2, blockHtml: 'test 2' }
+      items: [
+        '<div data-block-number="2"></div>'
       ]
     })
     const action = {
       type: 'RECEIVED_NEW_BLOCK',
       msg: {
-        blockHtml: 'test 5',
-        blockNumber: 5
+        blockHtml: '<div data-block-number="5"></div>'
       }
     }
     const output = reducer(state, action)
 
-    expect(output.blocks).toEqual([
-      { blockNumber: 5, blockHtml: 'test 5' },
-      { blockNumber: 4, blockHtml: placeHolderBlock(4) },
-      { blockNumber: 3, blockHtml: placeHolderBlock(3) },
-      { blockNumber: 2, blockHtml: 'test 2' }
+    expect(output.items).toEqual([
+      '<div data-block-number="5"></div>',
+      placeHolderBlock(4),
+      placeHolderBlock(3),
+      '<div data-block-number="2"></div>'
     ])
   })
   test('replaces duplicated block', () => {
     const state = Object.assign({}, initialState, {
-      blocks: [
-        { blockNumber: 5, blockHtml: 'test 5' },
-        { blockNumber: 4, blockHtml: 'test 4' }
+      items: [
+        '<div data-block-number="5"></div>',
+        '<div data-block-number="4"></div>'
       ]
     })
     const action = {
       type: 'RECEIVED_NEW_BLOCK',
       msg: {
-        blockHtml: 'test5',
-        blockNumber: 5
+        blockHtml: '<div data-block-number="5" class="new"></div>',
       }
     }
     const output = reducer(state, action)
 
-    expect(output.blocks).toEqual([
-      { blockNumber: 5, blockHtml: 'test5' },
-      { blockNumber: 4, blockHtml: 'test 4' }
+    expect(output.items).toEqual([
+        '<div data-block-number="5" class="new"></div>',
+        '<div data-block-number="4"></div>'
     ])
   })
   test('skips if new block height is lower than lowest on page', () => {
     const state = Object.assign({}, initialState, {
-      blocks: [
-        { blockNumber: 5, blockHtml: 'test 5' },
-        { blockNumber: 4, blockHtml: 'test 4' },
-        { blockNumber: 3, blockHtml: 'test 3' },
-        { blockNumber: 2, blockHtml: 'test 2' }
+      items: [
+        '<div data-block-number="5"></div>',
+        '<div data-block-number="4"></div>',
+        '<div data-block-number="3"></div>',
+        '<div data-block-number="2"></div>'
       ]
     })
     const action = {
       type: 'RECEIVED_NEW_BLOCK',
       msg: {
-        blockNumber: 1,
-        blockHtml: 'test 1'
+        blockHtml: '<div data-block-number="1"></div>'
       }
     }
     const output = reducer(state, action)
 
-    expect(output.blocks).toEqual([
-      { blockNumber: 5, blockHtml: 'test 5' },
-      { blockNumber: 4, blockHtml: 'test 4' },
-      { blockNumber: 3, blockHtml: 'test 3' },
-      { blockNumber: 2, blockHtml: 'test 2' }
+    expect(output.items).toEqual([
+      '<div data-block-number="5"></div>',
+      '<div data-block-number="4"></div>',
+      '<div data-block-number="3"></div>',
+      '<div data-block-number="2"></div>'
     ])
   })
 })
