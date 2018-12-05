@@ -22,7 +22,7 @@ function baseReducer (state = initialState, action) {
       })
     }
     case 'RECEIVED_NEW_BLOCK': {
-      if (state.channelDisconnected) return state
+      if (state.channelDisconnected || state.beyondPageOne) return state
 
       const blockNumber = getBlockNumber(action.msg.blockHtml)
       const minBlock = getBlockNumber(_.last(state.items))

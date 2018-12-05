@@ -23,6 +23,18 @@ describe('RECEIVED_NEW_BLOCK', () => {
 
     expect(output.items).toEqual(['<div data-block-number="1"></div>'])
   })
+  test('ignores new block if not in first page', () => {
+    const state = Object.assign({}, initialState, { items: [], beyondPageOne: true })
+    const action = {
+      type: 'RECEIVED_NEW_BLOCK',
+      msg: {
+        blockHtml: '<div data-block-number="1"></div>'
+      }
+    }
+    const output = reducer(state, action)
+
+    expect(output.items).toEqual([])
+  })
   test('inserts place holders if block received out of order', () => {
     window.localized = {}
     const state = Object.assign({}, initialState, {
