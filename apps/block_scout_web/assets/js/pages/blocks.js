@@ -70,7 +70,11 @@ const $blockListPage = $('[data-page="block-list"]')
 const $uncleListPage = $('[data-page="uncle-list"]')
 const $reorgListPage = $('[data-page="reorg-list"]')
 if ($blockListPage.length || $uncleListPage.length || $reorgListPage.length) {
-  const store = createAsyncLoadStore(reducer, initialState, 'dataset.blockNumber')
+  const store = createAsyncLoadStore(
+    $blockListPage.length ? reducer : baseReducer,
+    initialState,
+    'dataset.blockNumber'
+  )
   connectElements({ store, elements })
 
   const blocksChannel = socket.channel(`blocks:new_block`, {})
