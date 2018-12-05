@@ -67,7 +67,9 @@ function withMissingBlocks (reducer) {
 }
 
 const $blockListPage = $('[data-page="block-list"]')
-if ($blockListPage.length) {
+const $uncleListPage = $('[data-page="uncle-list"]')
+const $reorgListPage = $('[data-page="reorg-list"]')
+if ($blockListPage.length || $uncleListPage.length || $reorgListPage.length) {
   const store = createAsyncLoadStore(reducer, initialState, 'dataset.blockNumber')
   connectElements({ store, elements })
 
